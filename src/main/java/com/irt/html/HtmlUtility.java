@@ -24,11 +24,17 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 /**
  *
  */
 public class HtmlUtility {
+	private static final Pattern XSS_PATTERN = Pattern.compile(
+		"[<>\"'\\/]|javascript:|script|onerror|onload|eval\\(|expression\\("
+		, Pattern.CASE_INSENSITIVE
+	);
+
 	HtmlUtility() {}
 
 	public static boolean checkURL( String url, String[] domainWhiteList ) {
@@ -54,13 +60,10 @@ public class HtmlUtility {
 				return "";
 		} catch( java.io.UnsupportedEncodingException ex ) {}
 
-		if( value.indexOf("<") >= 0 || value.indexOf(">") >= 0 || value.indexOf("\\(") >= 0 || value.indexOf("\\)") >= 0
-				|| value.indexOf("'") >= 0 || value.indexOf("\"") >= 0 || value.indexOf("+") >= 0 || value.indexOf("..") >= 0
-				|| value.toLowerCase().indexOf("eval\\((.*)\\)") >= 0 || value.toLowerCase().indexOf("[\\\"\\\'][\\s]*javascript:(.*)[\\\"\\\']") >= 0 ) {
+		if(  XSS_PATTERN.matcher(value).find() )
 			return "";
-		}
-
-		return value;
+		else
+			return value;
 	}
 
 	public static String cleanXSS( String value ) {
@@ -70,8 +73,8 @@ public class HtmlUtility {
 		value = value.replaceAll( "\\(", "&#40;" ).replaceAll( "\\)", "&#41;" );
 		value = value.replaceAll( "'", "&#39;" );
 		value = value.replaceAll( "\"", "&#34;" );
-		value = value.replaceAll( "eval\\((.*)\\)", "" );
-		value = value.replaceAll( "[\\\"\\\'][\\s]*javascript:(.*)[\\\"\\\']", "\"\"" );
+		value = value.replaceAll( "eval\\([^)]*\\)", "" );
+		value = value.replaceAll( "[\"'][\\s]*javascript:[^\"']*[\"']", "" );
 
 		try {
 			value = value.replaceAll( java.net.URLDecoder.decode("%00", "UTF-8"), "" );
