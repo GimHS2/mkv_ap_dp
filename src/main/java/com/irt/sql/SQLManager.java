@@ -548,6 +548,21 @@ public class SQLManager {
 				|| normalized.indexOf("*/") >= 0
 				|| normalized.indexOf('\0') >= 0 )
 			throw new SQLException( "Unsafe SQL query detected." );
+
+		String upper = normalized.toUpperCase( java.util.Locale.ROOT );
+		if( !( upper.startsWith("SELECT ") || upper.startsWith("WITH ") ) )
+			throw new SQLException( "Only read-only SQL query is allowed." );
+
+		if( upper.indexOf(" INSERT ") >= 0
+				|| upper.indexOf(" UPDATE ") >= 0
+				|| upper.indexOf(" DELETE ") >= 0
+				|| upper.indexOf(" DROP ") >= 0
+				|| upper.indexOf(" ALTER ") >= 0
+				|| upper.indexOf(" TRUNCATE ") >= 0
+				|| upper.indexOf(" MERGE ") >= 0
+				|| upper.indexOf(" EXEC ") >= 0
+				|| upper.indexOf(" EXECUTE ") >= 0 )
+			throw new SQLException( "Unsafe SQL query detected." );
 	}
 
 	public static List<Map<String, Object>> getRecordList( SQLHandler handler, PreparedStatement pstmt ) throws SQLException {
