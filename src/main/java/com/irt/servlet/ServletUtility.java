@@ -111,12 +111,24 @@ public class ServletUtility {
 		if( sortKeys == null )
 			return defaultSortKeys;
 		else {
+			java.util.HashSet<String> allowedSortFields = new java.util.HashSet<String>();
+			if( defaultSortKeys != null ) {
+				for( int i = 0; i < defaultSortKeys.length; i++ ) {
+					String normalizedDefaultSortKey = Utility.normalizeSortKey( defaultSortKeys[i] );
+					if( normalizedDefaultSortKey != null )
+						allowedSortFields.add( normalizedDefaultSortKey.split("#", 2)[0] );
+				}
+			}
+
 			java.util.ArrayList<String> normalized = new java.util.ArrayList<String>();
 			for( int k = 0; k < sortKeys.length; k++ ) {
 				if( sortKeys[k] != null && sortKeys[k].length() > 0 ) {
 					String normalizeSortKey = Utility.normalizeSortKey( sortKeys[k] );
-					if( normalizeSortKey != null )
-						normalized.add( normalizeSortKey );
+					if( normalizeSortKey != null ) {
+						String sortField = normalizeSortKey.split("#", 2)[0];
+						if( allowedSortFields.contains(sortField) )
+							normalized.add( normalizeSortKey );
+					}
 				}
 			}
 
@@ -182,12 +194,24 @@ public class ServletUtility {
 		if( sortKeys == null )
 			db.setSort( defaultSortKeys );
 		else {
+			java.util.HashSet<String> allowedSortFields = new java.util.HashSet<String>();
+			if( defaultSortKeys != null ) {
+				for( int i = 0; i < defaultSortKeys.length; i++ ) {
+					String normalizedDefaultSortKey = Utility.normalizeSortKey( defaultSortKeys[i] );
+					if( normalizedDefaultSortKey != null )
+						allowedSortFields.add( normalizedDefaultSortKey.split("#", 2)[0] );
+				}
+			}
+
 			java.util.ArrayList<String> normalized = new java.util.ArrayList<String>();
 			for( int k = 0; k < sortKeys.length; k++ ) {
 				if( sortKeys[k] != null && sortKeys[k].length() > 0 ) {
 					String normalizeSortKey = Utility.normalizeSortKey( sortKeys[k] );
-					if( normalizeSortKey != null )
-						normalized.add( normalizeSortKey );
+					if( normalizeSortKey != null ) {
+						String sortField = normalizeSortKey.split("#", 2)[0];
+						if( allowedSortFields.contains(sortField) )
+							normalized.add( normalizeSortKey );
+					}
 				}
 			}
 
