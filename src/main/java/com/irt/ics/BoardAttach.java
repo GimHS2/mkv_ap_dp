@@ -231,7 +231,7 @@ public class BoardAttach extends com.irt.rbm.ManipulableManagerImpl {
 	}
 
 	public boolean saveAttachFileToServer( String fileSaveDirFullPath, File inputFile, String savingFileName ) throws IOException {
-		if( !Utility.isSafeFile(fileSaveDirFullPath, savingFileName) )
+		if( !Utility.isSafeFilePath(fileSaveDirFullPath) || Utility.isSafeFileName(savingFileName) )
 			return false;
 
 		if( checkAndMakeAttachDirectory(new File(fileSaveDirFullPath)) ) {
