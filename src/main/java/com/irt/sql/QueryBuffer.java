@@ -33,6 +33,7 @@ package com.irt.sql;
 import com.irt.data.Condition;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Query를 저장하는 BufferedString.
@@ -469,7 +470,7 @@ public class QueryBuffer implements InnerQueryBuffer {
 	 * @return 추가되었는지 여부
 	 */
 	public boolean appendOrderByFieldName( String fieldName, String sortWay ) {
-		if( existData(fieldName) ) {
+		if( existData(fieldName) && Pattern.compile("^[A-Za-z_][A-Za-z0-9_]*$").matcher(fieldName).matches() ) {
 			appendOrderBy( "\""+ fieldName +"\""+ (sortWay != null ? " "+ sortWay : "") );
 			return true;
 		}
@@ -695,6 +696,7 @@ public class QueryBuffer implements InnerQueryBuffer {
 	/**
 	 * 이미 SELECT절에 추가된 alias인지를 검사.
 	 */
+	@Override
 	public boolean existDataAlias( String alias ) {
 		return dataAliasMap.containsKey( alias );
 	}
@@ -709,6 +711,7 @@ public class QueryBuffer implements InnerQueryBuffer {
 	/**
 	 * bindVariable개수 return
 	 */
+	@Override
 	public int getBindVariableCount() {
 		int count = 0;
 		if( bindVars[WITH_BINDVAR] != null ) count += bindVars[WITH_BINDVAR].size();
@@ -728,6 +731,7 @@ public class QueryBuffer implements InnerQueryBuffer {
 	/**
 	 * bindVariableList return
 	 */
+	@Override
 	public List<Object> getBindVariableList() {
 		return getBindVariableList( new java.util.ArrayList<Object>() );
 	}
@@ -816,6 +820,7 @@ public class QueryBuffer implements InnerQueryBuffer {
 			return null;
 	}
 
+	@Override
 	public String getQuery() {
 		if( databuf == null || (frombuf == null && innerQueryBufferList == null) ) return null;
 		StringBuffer query = new StringBuffer();
@@ -895,6 +900,7 @@ public class QueryBuffer implements InnerQueryBuffer {
 		return false;
 	}
 
+	@Override
 	public String toString() {
 		return getQuery();
 	}
