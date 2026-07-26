@@ -15,11 +15,11 @@
 
 import com.irt.dpr.PartyMaster;
 import com.irt.servlet.*;
-import com.irt.util.Utility;
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.regex.Pattern;
+
 import javax.servlet.ServletException;
 
 /**
@@ -47,6 +47,8 @@ public class DPRMaster extends DPRServletModel {
 	private final String DATATYPE_VARIANT				= "VA";
 	private final String DATATYPE_PUTUP					= "PU";
 	private final String DATATYPE_PRODUCT_CATEGORY		= "PC";
+
+	private final Pattern DPR_JSP_PATTERN = Pattern.compile( "^dpr_[^?#\\s]*\\.jsp$ ", Pattern.CASE_INSENSITIVE);
 
 	protected Map<String, Object> createConditionMap( Context ctx ) throws ServletException, SQLException {
 		ParameterMap conditionMap = new ParameterMap( ctx.req, true );
@@ -212,7 +214,7 @@ public class DPRMaster extends DPRServletModel {
 			ctx.req.setAttribute( listName, ((PartyMaster)ctx.db).getRecords( conditionMap, fieldKeys, 0, -1 ) );
 
 		String jspName = ctx.req.getParameter( "jspname" );
-		if( jspName == null || jspName.length() == 0 || !Utility.isSafeFileName(jspName) )
+		if( jspName == null || jspName.length() == 0 || !DPR_JSP_PATTERN.matcher(jspName).matches() )
 			throw new ServletModelException( ServletModelException.NEEDED_PARAMETER );
 
 		return forward( ctx, systemConfig.getJspPath() +"/"+ jspName +".jsp" );
@@ -257,7 +259,7 @@ public class DPRMaster extends DPRServletModel {
 		}
 
 		String jspName = ctx.req.getParameter( "jspname" );
-		if( jspName == null || jspName.length() == 0 || !Utility.isSafeFileName(jspName) )
+		if( jspName == null || jspName.length() == 0 || !DPR_JSP_PATTERN.matcher(jspName).matches() )
 			throw new ServletModelException( ServletModelException.NEEDED_PARAMETER );
 
 		return forward( ctx, systemConfig.getJspPath() +"/" + (jspName != null ? jspName + ".jsp" : "dpr_master_select.jsp") );
