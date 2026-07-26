@@ -26,6 +26,8 @@ import java.net.URLEncoder;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
+import org.apache.commons.text.StringEscapeUtils;
+
 /**
  *
  */
@@ -69,10 +71,7 @@ public class HtmlUtility {
 	public static String cleanXSS( String value ) {
 		if( value == null ) return "";
 
-		value = value.replaceAll( "<", "&lt;" ).replaceAll( ">", "&gt;" );
-		value = value.replaceAll( "\\(", "&#40;" ).replaceAll( "\\)", "&#41;" );
-		value = value.replaceAll( "'", "&#39;" );
-		value = value.replaceAll( "\"", "&#34;" );
+		value = StringEscapeUtils.escapeHtml4( StringEscapeUtils.escapeXSI(value) );
 
 		try {
 			value = value.replaceAll( java.net.URLDecoder.decode("%00", "UTF-8"), "" );
