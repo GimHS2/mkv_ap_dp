@@ -563,6 +563,29 @@ public class SQLManager {
 				|| upper.indexOf(" EXEC ") >= 0
 				|| upper.indexOf(" EXECUTE ") >= 0 )
 			throw new SQLException( "Unsafe SQL query detected." );
+
+		validateOrderByClauseForExecution( normalized );
+	}
+
+	private static void validateOrderByClauseForExecution( String normalizedQuery ) throws SQLException {
+		String upper = normalizedQuery.toUpperCase( java.util.Locale.ROOT );
+		int orderByIdx = upper.lastIndexOf( " ORDER BY " );
+		if( orderByIdx < 0 )
+			return;
+
+		String orderByClause = normalizedQuery.substring( orderByIdx + " ORDER BY ".length() ).trim();
+		if( orderByClause.length() == 0 )
+			throw new SQLException( "Unsafe SQL query detected." );
+
+		String orderByItemPattern = "^\"[A-Za-z_][A-Za-z0-9_]*\"(\\s+(ASC|DESC))?(\\s+NULLS\\s+(FIRST|LAST))?$";
+		String[] items = orderByClause.split( "," );
+		for( int i = 0; i < items.length; i++ ) {
+			String item = items[i].trim();
+			if( item.length() == 0 )
+				throw new SQLException( "Unsafe SQL query detected." );
+			if( !java.util.regex.Pattern.compile(orderByItemPattern, java.util.regex.Pattern.CASE_INSENSITIVE).matcher(item).matches() )
+				throw new SQLException( "Unsafe SQL query detected." );
+		}
 	}
 
 	public static List<Map<String, Object>> getRecordList( SQLHandler handler, PreparedStatement pstmt ) throws SQLException {
