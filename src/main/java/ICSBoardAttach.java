@@ -216,7 +216,7 @@ public class ICSBoardAttach extends ICSBoardServlet {
 	protected boolean remove( Context ctx ) throws IOException, ServletException, SQLException {
 		BoardAttach db = (BoardAttach)ctx.db;
 
-		String attachManageKey = HtmlUtility.checkXSS( ctx.req.getParameter("attachManageKey") );
+		String attachManageKey = HtmlUtility.cleanXSS( ctx.req.getParameter("attachManageKey") );
 		int attachNumber = getNumberParameter( ctx, "attachNumber", true );
 		if( attachManageKey == null || attachManageKey.length() == 0 )
 			throw new ServletModelException( ServletModelException.NEEDED_PARAMETER );
