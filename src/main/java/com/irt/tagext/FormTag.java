@@ -69,7 +69,9 @@ public class FormTag extends javax.servlet.jsp.tagext.BodyTagSupport {
 		try {
 			if( RBMSystem.getSystemEnvBool("SYS", "DatabaseResource;usePageEdit", false) ) {
 				String pageId = PageMessageKeys.getPageId((HtmlPage)pageContext.findAttribute("htmlpage"));
+				pageId = ( pageId != null ? HtmlUtility.cleanXSS(pageId) : "" );
 				String reqId = PageMessageKeys.getRequestId((javax.servlet.http.HttpServletRequest)pageContext.getRequest());
+				reqId = ( reqId != null ? HtmlUtility.cleanXSS(reqId) : "" );
 				PageMessageKeys.putPage((javax.servlet.http.HttpServletRequest)pageContext.getRequest(), pageId);
 				pageContext.getOut().print("<div style='display:hidden;' class='msgres' data-page-id='" + pageId + "' data-req-id='"+reqId+"'>");
 				pageContext.getOut().print("</div>");
