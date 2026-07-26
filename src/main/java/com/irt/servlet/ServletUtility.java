@@ -22,6 +22,7 @@
 package com.irt.servlet;
 
 import com.irt.data.cols.ColumnList;
+import com.irt.util.Utility;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -110,26 +111,17 @@ public class ServletUtility {
 		if( sortKeys == null )
 			return defaultSortKeys;
 		else {
+			java.util.ArrayList<String> normalized = new java.util.ArrayList<String>();
 			for( int k = 0; k < sortKeys.length; k++ ) {
-				if( sortKeys[k].length() == 0 ) {
-					int count = k;
-					for( ; k < sortKeys.length; k++ ) {
-						if( sortKeys[k].length() > 0 )
-							count++;
-					}
-					if( count == 0 ) return defaultSortKeys;
-
-					defaultSortKeys = new String[ count ];
-
-					count = 0;
-					for( k = 0; k < sortKeys.length; k++ ) {
-						if( sortKeys[k].length() > 0 )
-							defaultSortKeys[count++] = sortKeys[k];
-					}
+				if( sortKeys[k] != null && sortKeys[k].length() > 0 ) {
+					String normalizeSortKey = Utility.normalizeSortKey( sortKeys[k] );
+					if( normalizeSortKey != null )
+						normalized.add( normalizeSortKey );
 				}
 			}
 
-			return sortKeys;
+			if( normalized.size() == 0 ) return defaultSortKeys;
+			return normalized.toArray( new String[ normalized.size() ] );
 		}
 	}
 
@@ -190,26 +182,19 @@ public class ServletUtility {
 		if( sortKeys == null )
 			db.setSort( defaultSortKeys );
 		else {
+			java.util.ArrayList<String> normalized = new java.util.ArrayList<String>();
 			for( int k = 0; k < sortKeys.length; k++ ) {
-				if( sortKeys[k].length() == 0 ) {
-					db.clearSort();
-
-					int count = k;
-					for( int i = 0; i < count; i++ )
-						db.appendSort( sortKeys[i] );
-					for( ; k < sortKeys.length; k++ )
-						if( sortKeys[k].length() > 0 ) {
-							count++;
-							db.appendSort( sortKeys[k] );
-						}
-
-					if( count == 0 )
-						db.setSort( defaultSortKeys );
-					return;
+				if( sortKeys[k] != null && sortKeys[k].length() > 0 ) {
+					String normalizeSortKey = Utility.normalizeSortKey( sortKeys[k] );
+					if( normalizeSortKey != null )
+						normalized.add( normalizeSortKey );
 				}
 			}
 
-			db.setSort( sortKeys );
+			if( normalized.size() == 0 )
+				db.setSort( defaultSortKeys );
+			else
+				db.setSort( normalized.toArray( new String[ normalized.size() ] ) );
 		}
 	}
 }
