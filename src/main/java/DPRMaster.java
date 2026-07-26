@@ -48,7 +48,7 @@ public class DPRMaster extends DPRServletModel {
 	private final String DATATYPE_PUTUP					= "PU";
 	private final String DATATYPE_PRODUCT_CATEGORY		= "PC";
 
-	private final Pattern DPR_JSP_PATTERN = Pattern.compile( "^dpr_[^?#\\s]*\\.jsp$ ", Pattern.CASE_INSENSITIVE);
+	private final Pattern DPR_JSP_PATTERN = Pattern.compile( "^dpr_[^?#\\s]*\\.jsp$", Pattern.CASE_INSENSITIVE);
 
 	protected Map<String, Object> createConditionMap( Context ctx ) throws ServletException, SQLException {
 		ParameterMap conditionMap = new ParameterMap( ctx.req, true );
