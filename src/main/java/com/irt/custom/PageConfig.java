@@ -49,6 +49,8 @@ import com.irt.servlet.ServletModel;
 import com.irt.servlet.SystemConfig;
 import java.util.Locale;
 import java.util.Stack;
+import java.util.regex.Pattern;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -75,7 +77,7 @@ public class PageConfig extends com.irt.servlet.PageConfig implements com.irt.ht
 		this.contentGroupStack.push( this.contentGroup );
 		this.focus = req.getParameter( ServletModel.PARAM_FOCUS );
 		if( this.focus != null ) {
-			if( this.focus.length() == 0 || this.focus.matches(".*(\\(|\\)|<|>|;|\\+|\\.|-).*") )
+			if( this.focus.length() == 0 || Pattern.compile("[()<>;+.\\-]").matcher(this.focus).find() )
 				this.focus = null;
 		}
 
