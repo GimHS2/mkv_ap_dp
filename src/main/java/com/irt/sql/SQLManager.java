@@ -490,6 +490,7 @@ public class SQLManager {
 	public static Object getObjectValue( SQLHandler handler, String query, Object... bindVars ) throws SQLException {
 		if( logger.isDebugEnabled() ) QueryUtility.printQuery( logger, "getObjectValue()", query, bindVars );
 
+		validateQueryForExecution( query );
 		PreparedStatement pstmt = handler.getConnection().prepareStatement( query );
 		ResultSet rset = null;
 		try {
@@ -526,6 +527,7 @@ public class SQLManager {
 			throws SQLException {
 		if( logger.isDebugEnabled() ) QueryUtility.printQuery( logger, "getRecordList()", query, bindVars );
 
+		validateQueryForExecution( query );
 		PreparedStatement pstmt = handler.getConnection().prepareStatement( query );
 		try {
 			bindVariables( pstmt, bindVars );
@@ -533,6 +535,19 @@ public class SQLManager {
 		} finally {
 			try { pstmt.close(); } catch( Exception ex ) {}
 		}
+	}
+
+	private static void validateQueryForExecution( String query ) throws SQLException {
+		if( query == null || query.trim().length() == 0 )
+			throw new SQLException( "Invalid SQL query." );
+
+		String normalized = query.trim();
+		if( normalized.indexOf(';') >= 0
+				|| normalized.indexOf("--") >= 0
+				|| normalized.indexOf("/*") >= 0
+				|| normalized.indexOf("*/") >= 0
+				|| normalized.indexOf('\0') >= 0 )
+			throw new SQLException( "Unsafe SQL query detected." );
 	}
 
 	public static List<Map<String, Object>> getRecordList( SQLHandler handler, PreparedStatement pstmt ) throws SQLException {
