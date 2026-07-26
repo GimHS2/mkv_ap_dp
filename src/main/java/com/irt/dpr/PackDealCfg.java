@@ -32,12 +32,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class PackDealCfg extends ManipulableManagerImpl implements TableAccessor {
 	private final static Table table = Schema.findTable(Schema.DPR_PACKDEAL_CFG);
 	private final static QueryFactory factory = Schema.findQueryFactory(Schema.DPR_PACKDEAL_CFG);
 
 	private TableDao tdao;
+	private static final Pattern HAS_WHITESPACE = Pattern.compile( "\\s" );
 
 	public PackDealCfg( SQLHandler handler ) {
 		super(handler, table, factory);
@@ -60,11 +62,13 @@ public class PackDealCfg extends ManipulableManagerImpl implements TableAccessor
 
 			Party party = null;
 
+			@Override
 			public void close() {
 				if( this.party != null )
 					this.party = null;
 			}
 
+			@Override
 			public Map<String, Object> processLine( SQLHandler handler, Map<String, Object> recordMap ) throws DataException, SQLException {
 				// mandatory
 				if( lineDefaultMap.containsKey("updateUserId") )
@@ -109,7 +113,7 @@ public class PackDealCfg extends ManipulableManagerImpl implements TableAccessor
 				MessageHandler msghandler = handler.getMessageHandler();
 				if( recordMap.get("dealCode") != null ) {
 					String dealCode = (String)recordMap.get("dealCode");
-					if( dealCode.matches(".*\\s+.*") ) {
+					if( HAS_WHITESPACE.matcher(dealCode).find() ) {
 						String message = msghandler.getMessage(DataException.ERR_INVALID_CHAR,
 								msghandler.getMessage(table.getField("dealCode").getDescriptionKey())
 										+ "(" + dealCode + ")");
