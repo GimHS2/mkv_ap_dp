@@ -15,6 +15,7 @@
 package com.irt.tagext;
 
 import com.irt.html.HtmlPage;
+import com.irt.html.HtmlUtility;
 import com.irt.resbdl.PageMessageKeys;
 import com.irt.servlet.ServletUtility;
 
@@ -39,7 +40,9 @@ public class HtmlTag extends javax.servlet.jsp.tagext.BodyTagSupport {
 			if( pageContext.findAttribute("htmlpage") != null ) {
 				if( com.irt.rbm.RBMSystem.getSystemEnvBool("SYS", "DatabaseResource;usePageEdit", false) ) {
 					String pageId = PageMessageKeys.getPageId((HtmlPage)pageContext.findAttribute("htmlpage"));
+					pageId = ( pageId != null ? HtmlUtility.cleanXSS(pageId) : "" );
 					String reqId = PageMessageKeys.getRequestId((javax.servlet.http.HttpServletRequest)pageContext.getRequest());
+					reqId = ( reqId != null ? HtmlUtility.cleanXSS(reqId) : "" );
 					PageMessageKeys.putPage((javax.servlet.http.HttpServletRequest)pageContext.getRequest(), pageId);
 					pageContext.getOut().print("<div style='display:hidden;' class='msgres' data-page-id='" + pageId + "' data-req-id='"+reqId+"'>");
 					pageContext.getOut().print("</div>");
