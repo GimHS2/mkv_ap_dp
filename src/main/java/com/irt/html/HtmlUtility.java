@@ -73,8 +73,6 @@ public class HtmlUtility {
 		value = value.replaceAll( "\\(", "&#40;" ).replaceAll( "\\)", "&#41;" );
 		value = value.replaceAll( "'", "&#39;" );
 		value = value.replaceAll( "\"", "&#34;" );
-		value = value.replaceAll( "eval\\([^)]*\\)", "" );
-		value = value.replaceAll( "[\"'][\\s]*javascript:[^\"']*[\"']", "" );
 
 		try {
 			value = value.replaceAll( java.net.URLDecoder.decode("%00", "UTF-8"), "" );
