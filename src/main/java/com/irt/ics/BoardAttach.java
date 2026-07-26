@@ -150,7 +150,24 @@ public class BoardAttach extends com.irt.rbm.ManipulableManagerImpl {
 			if( !Utility.isSafeFile(filePath, serverFileName) )
 				return false;
 
-			File serverFile = new File( filePath, serverFileName );
+			File serverFile;
+			try {
+				File baseDir = new File( filePath ).getCanonicalFile();
+				File candidateFile = new File( baseDir, serverFileName ).getCanonicalFile();
+
+				String basePath = baseDir.getPath();
+				String candidatePath = candidateFile.getPath();
+				if( !candidatePath.startsWith(basePath + File.separator) )
+					return false;
+
+				serverFile = candidateFile;
+			} catch( IOException ioEx ) {
+				throw handler.createDataException(
+					DataException.ERR_ERROR
+					, handler.getMessageHandler().getMessage( "ERR_ICS_BOARD_CANNOT_DELETE_ATTACH"+ (attachType != null ? "_"+ attachType : "") )
+				);
+			}
+
 			try {
 				if( serverFile.exists() ) {
 					try {
