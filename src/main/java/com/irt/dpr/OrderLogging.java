@@ -180,13 +180,8 @@ public class OrderLogging {
 		if( normalized.length() == 0 )
 			return "EMPTY";
 
-		normalized = normalized.replace('/', '_').replace('\\', '_');
-		while( normalized.indexOf("..") >= 0 )
-			normalized = normalized.replace("..", "_");
-
-		normalized = normalized.replaceAll("[^A-Za-z0-9_-]", "_");
-		if( normalized.length() == 0 )
-			return "EMPTY";
+		if( !normalized.matches("[A-Za-z0-9_-]+") )
+			throw new IllegalArgumentException( "Invalid file component" );
 
 		return normalized;
 	}
