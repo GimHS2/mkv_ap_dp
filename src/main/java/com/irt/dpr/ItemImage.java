@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.util.Map;
 
@@ -163,10 +165,23 @@ public class ItemImage extends com.irt.rbm.ManipulableManagerImpl {
 		String defaultImagePath = com.irt.rbm.RBMSystem.getSystemEnv( "DPR", "Image;defaultImagePath" );
 		String defaultImageFileName = com.irt.rbm.RBMSystem.getSystemEnv( "DPR", "Image;defaultImageName" );
 
-		if( Utility.isSafeFile( defaultImagePath, defaultImageFileName) )
+		if( defaultImagePath == null || defaultImageFileName == null
+				|| defaultImagePath.length() == 0 || defaultImageFileName.length() == 0 ) {
 			throw new IllegalArgumentException( "Invalid default image path" );
+		}
 
-		return defaultImagePath + java.io.File.separator + defaultImageFileName;
+		if( defaultImageFileName.contains("..") || defaultImageFileName.contains("/") || defaultImageFileName.contains("\\") ) {
+			throw new IllegalArgumentException( "Invalid default image path" );
+		}
+
+		Path basePath = Paths.get( defaultImagePath ).normalize().toAbsolutePath();
+		Path imagePath = basePath.resolve( defaultImageFileName ).normalize().toAbsolutePath();
+
+		if( !imagePath.startsWith( basePath ) ) {
+			throw new IllegalArgumentException( "Invalid default image path" );
+		}
+
+		return imagePath.toString();
 	}
 
 	@Override
