@@ -42,9 +42,23 @@ public class BoardAttach extends com.irt.rbm.ManipulableManagerImpl {
 
 	private boolean checkAndMakeAttachDirectory( File directoryFile ) throws SecurityException {
 		if( !directoryFile.exists() )
-			return directoryFile.mkdir();
+			return directoryFile.mkdirs();
 
-		return true;
+		return directoryFile.isDirectory();
+	}
+
+	private File getValidatedAttachDirectory( String fileSaveDirFullPath ) throws IOException {
+		if( !Utility.isSafeFilePath(fileSaveDirFullPath) )
+			return null;
+
+		File configuredDir = new File( fileSaveDirFullPath );
+		File canonicalConfiguredDir = configuredDir.getCanonicalFile();
+
+		// Enforce canonical equivalence to block traversal/alternate representations.
+		if( !canonicalConfiguredDir.getPath().equals(configuredDir.getAbsoluteFile().getCanonicalPath()) )
+			return null;
+
+		return canonicalConfiguredDir;
 	}
 
 	public boolean cleanNoUsedAttaches( String attachManageKey ) throws DataException, SQLException {
@@ -248,11 +262,15 @@ public class BoardAttach extends com.irt.rbm.ManipulableManagerImpl {
 	}
 
 	public boolean saveAttachFileToServer( String fileSaveDirFullPath, File inputFile, String savingFileName ) throws IOException {
-		if( !Utility.isSafeFilePath(fileSaveDirFullPath) || !Utility.isSafeKeyValue(savingFileName) )
+		if( !Utility.isSafeKeyValue(savingFileName) )
 			return false;
 
-		if( checkAndMakeAttachDirectory(new File(fileSaveDirFullPath)) ) {
-			File outputFile = new File( fileSaveDirFullPath, savingFileName);
+		File validatedDir = getValidatedAttachDirectory( fileSaveDirFullPath );
+		if( validatedDir == null )
+			return false;
+
+		if( checkAndMakeAttachDirectory(validatedDir) ) {
+			File outputFile = new File( validatedDir, savingFileName );
 			if( !inputFile.renameTo(outputFile) ) {
 				java.io.InputStream inputStream = null;
 				java.io.OutputStream outputStream = null;
@@ -268,8 +286,8 @@ public class BoardAttach extends com.irt.rbm.ManipulableManagerImpl {
 						outputStream.flush();
 					}
 				} finally {
-					try { inputStream.close(); } catch( Exception ignored ) {}
-					try { outputStream.close(); } catch( Exception ignored ) {}
+					try { if( inputStream != null ) inputStream.close(); } catch( Exception ignored ) {}
+					try { if( outputStream != null ) outputStream.close(); } catch( Exception ignored ) {}
 				}
 			}
 
