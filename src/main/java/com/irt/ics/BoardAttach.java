@@ -250,17 +250,9 @@ public class BoardAttach extends com.irt.rbm.ManipulableManagerImpl {
 	public boolean saveAttachFileToServer( String fileSaveDirFullPath, File inputFile, String savingFileName ) throws IOException {
 		if( !Utility.isSafeFilePath(fileSaveDirFullPath) || !Utility.isSafeKeyValue(savingFileName) )
 			return false;
-		if( savingFileName == null || savingFileName.indexOf("..") >= 0 || savingFileName.indexOf('/') >= 0 || savingFileName.indexOf('\\') >= 0 )
-			return false;
 
-		File baseDir = new File(fileSaveDirFullPath);
-		if( checkAndMakeAttachDirectory(baseDir) ) {
-			File canonicalBaseDir = baseDir.getCanonicalFile();
-			File outputFile = new File( canonicalBaseDir, savingFileName ).getCanonicalFile();
-			String basePath = canonicalBaseDir.getPath() + File.separator;
-			if( !outputFile.getPath().startsWith(basePath) )
-				return false;
-
+		if( checkAndMakeAttachDirectory(new File(fileSaveDirFullPath)) ) {
+			File outputFile = new File( fileSaveDirFullPath, savingFileName);
 			if( !inputFile.renameTo(outputFile) ) {
 				java.io.InputStream inputStream = null;
 				java.io.OutputStream outputStream = null;
