@@ -151,16 +151,24 @@ public class OrderXMLUtility {
 	public static void documentWriteFile( java.io.File file, Document document, Logger logger ) {
 		if( file == null )
 			throw new IllegalArgumentException( "invalid file" );
-		if( !isFileUnderOrderTracePath(file) )
+
+		java.io.File canonicalFile = null;
+		try {
+			canonicalFile = file.getCanonicalFile();
+		} catch( IOException ioEx ) {
+			throw new IllegalArgumentException( "invalid file path", ioEx );
+		}
+
+		if( !isFileUnderOrderTracePath(canonicalFile) )
 			throw new IllegalArgumentException( "invalid file path" );
-		if( !isSafeTraceFileName(file) )
+		if( !isSafeTraceFileName(canonicalFile) )
 			throw new IllegalArgumentException( "invalid file name" );
 
 		java.io.PrintWriter out = null;
 		javax.xml.transform.Transformer transformer;
 
 		try {
-			out = new java.io.PrintWriter( file );
+			out = new java.io.PrintWriter( canonicalFile );
 			transformer = javax.xml.transform.TransformerFactory.newInstance().newTransformer();
 			transformer.setOutputProperty( "encoding", "UTF-8" );
 
@@ -169,11 +177,11 @@ public class OrderXMLUtility {
 				, new javax.xml.transform.stream.StreamResult( out )
 			);
 		} catch( java.io.FileNotFoundException fileEx ) {
-			logger.error( "Can't make XML file: " + file.getName(), fileEx );
+			logger.error( "Can't make XML file: " + canonicalFile.getName(), fileEx );
 		} catch( javax.xml.transform.TransformerException transEx ) {
-			logger.error( "Can't make XML file" + file.getName(), transEx );
+			logger.error( "Can't make XML file" + canonicalFile.getName(), transEx );
 		} catch( javax.xml.transform.TransformerFactoryConfigurationError factoryConfigEx ) {
-			logger.error( "Can't make XML file" + file.getName(), factoryConfigEx );
+			logger.error( "Can't make XML file" + canonicalFile.getName(), factoryConfigEx );
 		} finally {
 			if( out != null ) out.close();
 		}
