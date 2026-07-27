@@ -204,6 +204,15 @@ public class ItemImage extends com.irt.rbm.ManipulableManagerImpl {
 		if( imageExtention == null )
 			imageExtention = DEFAULT_IMAGEEXTENTION;
 
+		if( organizationCode == null || !Utility.isSafeKeyValue(organizationCode) )
+			throw new IllegalArgumentException( "Invalid organization code." );
+		if( itemCode == null || !Utility.isSafeKeyValue(itemCode) )
+			throw new IllegalArgumentException( "Invalid item code." );
+		if( displayType == null || !Utility.isSafeKeyValue(displayType) )
+			throw new IllegalArgumentException( "Invalid display type." );
+		if( imageExtention == null || !Utility.isSafeKeyValue(imageExtention) )
+			throw new IllegalArgumentException( "Invalid image extension." );
+
 		String imageFileName = organizationCode + "_"+ itemCode + "_" + displayType + "." + imageExtention.toLowerCase();
 
 		if( Utility.isSafeFile(imageFilePath, imageFileName) )
