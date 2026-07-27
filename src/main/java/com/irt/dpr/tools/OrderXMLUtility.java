@@ -35,12 +35,34 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
 import com.irt.util.Utility;
+import com.irt.rbm.RBMSystem;
 
 /**
  *
  */
 public class OrderXMLUtility {
 	Logger logger = Logger.getLogger( "com.irt.dpr.tools.OrderCanonicalProcess" );
+
+	private static boolean isFileUnderOrderTracePath( java.io.File file ) {
+		if( file == null ) return false;
+
+		try {
+			String tempPath = RBMSystem.getSystemEnv( "DPR", "OrderCanonicalProcess;Path" );
+			if( tempPath == null || tempPath.trim().length() == 0 ) return false;
+
+			java.io.File baseDir = new java.io.File( tempPath ).getCanonicalFile();
+			java.io.File candidate = file.getCanonicalFile();
+
+			String basePath = baseDir.getPath();
+			String candidatePath = candidate.getPath();
+			if( basePath == null || candidatePath == null ) return false;
+
+			return candidatePath.equals(basePath)
+				|| candidatePath.startsWith( basePath + java.io.File.separator );
+		} catch( IOException ex ) {
+			return false;
+		}
+	}
 
 	private static Element createElement( Document document, String name, Object text ) {
 		Element element = document.createElement( name );
@@ -113,6 +135,8 @@ public class OrderXMLUtility {
 	public static void documentWriteFile( java.io.File file, Document document, Logger logger ) {
 		if( file == null )
 			throw new IllegalArgumentException( "invalid file" );
+		if( !isFileUnderOrderTracePath(file) )
+			throw new IllegalArgumentException( "invalid file path" );
 
 		java.io.PrintWriter out = null;
 		javax.xml.transform.Transformer transformer;
