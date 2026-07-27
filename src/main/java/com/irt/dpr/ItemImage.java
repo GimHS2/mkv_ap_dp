@@ -215,7 +215,7 @@ public class ItemImage extends com.irt.rbm.ManipulableManagerImpl {
 
 		String imageFileName = organizationCode + "_"+ itemCode + "_" + displayType + "." + imageExtention.toLowerCase();
 
-		if( Utility.isSafeFile(imageFilePath, imageFileName) )
+		if( !Utility.isSafeFile(imageFilePath, imageFileName) )
 			throw new IllegalArgumentException( "Invalid stored image file name." );
 
 		return imageFilePath + java.io.File.separator + imageFileName;
