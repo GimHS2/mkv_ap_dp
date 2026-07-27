@@ -188,7 +188,7 @@ public abstract class AbstractServletModel extends com.irt.servlet.ServletModel 
 				String uploadType = (String)resultMap.get( "uploadType" );
 				String dateTimeValue = (new java.text.SimpleDateFormat("yyyyMMdd_HHmmss")).format( new java.util.Date() );
 				String fileName = uploadType.toLowerCase() +"_"+ ctx.sessionMng.getUserId() +"_"+ dateTimeValue +"_"+ loaderLogger.getLogId();
-				if( !Utility.isSafeFileName(fileName) )
+				if( !Utility.isSafeKeyValue(fileName) )
 					throw new ServletModelException( ServletModelException.INVALID_PARAMETER, "invaild file name" );
 
 				if( isS3Storage ) {
@@ -241,7 +241,6 @@ public abstract class AbstractServletModel extends com.irt.servlet.ServletModel 
 		// get DataReader
 		com.irt.data.DataReader dataReader = null;
 		try {
-			uploadFile = com.irt.util.RBMDatabook.validateAndResolveInputFile( uploadFile, systemConfig.getTemporaryDirectory() );
 			dataReader = com.irt.util.RBMWorkbook.getDataReader( uploadFile, fileType, encoding );
 		} catch( com.irt.data.DataException dataEx ) {
 			throw new ServletModelException( dataEx.getErrorKey(), ctx.msghandler.getMessage(dataEx.getMessage()) );
@@ -283,7 +282,7 @@ public abstract class AbstractServletModel extends com.irt.servlet.ServletModel 
 				String uploadType = (String)resultMap.get( "uploadType" );
 				String dateTimeValue = (new java.text.SimpleDateFormat("yyyyMMdd_HHmmss")).format( new java.util.Date() );
 				String fileName = uploadType.toLowerCase() +"_"+ ctx.sessionMng.getUserId() +"_"+ dateTimeValue +"_"+ loaderLogger.getLogId();
-				if( !Utility.isSafeFileName(fileName) )
+				if( !Utility.isSafeKeyValue(fileName) )
 					throw new ServletModelException( ServletModelException.INVALID_PARAMETER, "invaild file name" );
 
 				if( isS3Storage ) {

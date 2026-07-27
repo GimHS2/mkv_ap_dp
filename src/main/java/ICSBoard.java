@@ -36,6 +36,7 @@ import com.irt.servlet.PageConfig;
 import com.irt.servlet.ParameterMap;
 import com.irt.servlet.ServletModelException;
 import com.irt.servlet.ServletUtility;
+import com.irt.util.Utility;
 
 import java.io.File;
 import java.io.IOException;
@@ -591,7 +592,7 @@ public class ICSBoard extends ICSBoardServlet {
 
 		String boardClassCode = (String)ctx.extraObj;
 		String attachManageKey = ctx.req.getParameter( "attachManageKey" );
-		if( !(ctx.req instanceof com.irt.servlet.MultipartHttpRequest) )
+		if( !(ctx.req instanceof com.irt.servlet.MultipartHttpRequest) || !Utility.isSafeKeyValue(attachManageKey) )
 			throw new ServletModelException( ServletModelException.INVALID_REQUEST );
 
 		// 레코드 읽기

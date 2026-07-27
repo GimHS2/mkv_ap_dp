@@ -20,6 +20,8 @@ import com.irt.data.DataException;
 import com.irt.html.HtmlUtility;
 import com.irt.ics.BoardAttach;
 import com.irt.servlet.*;
+import com.irt.util.Utility;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -140,7 +142,7 @@ public class ICSBoardAttach extends ICSBoardServlet {
 		String boardClassCode = ctx.req.getParameter( "boardClassCode" );
 		int boardNumber = getNumberParameter( ctx, "boardNumber", false );
 
-		if( !(ctx.req instanceof MultipartHttpRequest) )
+		if( !(ctx.req instanceof MultipartHttpRequest) || !Utility.isSafeKeyValue(attachManageKey) || !Utility.isSafeKeyValue(boardClassCode) )
 			throw new ServletModelException( ServletModelException.INVALID_REQUEST );
 		else if( attachManageKey == null || attachManageKey.length() == 0 )
 			throw new ServletModelException( ServletModelException.NEEDED_PARAMETER );

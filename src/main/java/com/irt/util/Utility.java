@@ -220,7 +220,7 @@ public class Utility {
 				&& normalized.indexOf("..") < 0;
 	}
 
-	public static boolean isSafeFileName( String fileName ) {
+	public static boolean isSafeKeyValue( String fileName ) {
 		if( fileName == null )
 			return false;
 
@@ -236,7 +236,7 @@ public class Utility {
 	}
 
 	public static boolean isSafeFile( String path, String fileName ) {
-		if( !isSafeFilePath(path) || !isSafeFileName(fileName) )
+		if( !isSafeFilePath(path) || !isSafeKeyValue(fileName) )
 			return false;
 
 		File baseDir, serverFile;
