@@ -57,17 +57,40 @@ public class DataLoader extends Thread {
 		this( handler, loader, loaderLogger, validator, reader, commitByLine, (PrintStream)null );
 	}
 
+	private static File validateErrorFile( File errorFile ) {
+		if( errorFile == null ) {
+			throw new IllegalArgumentException( "Invalid error file path" );
+		}
+
+		String fileName = errorFile.getName();
+		if( fileName == null || fileName.length() == 0 || fileName.contains("..")
+				|| fileName.contains("/") || fileName.contains("\\") ) {
+			throw new IllegalArgumentException( "Invalid error file path" );
+		}
+
+		try {
+			File canonicalFile = errorFile.getCanonicalFile();
+			File parent = canonicalFile.getParentFile();
+			if( parent == null || !canonicalFile.getName().equals(fileName) ) {
+				throw new IllegalArgumentException( "Invalid error file path" );
+			}
+			return canonicalFile;
+		} catch( IOException ioEx ) {
+			throw new IllegalArgumentException( "Invalid error file path", ioEx );
+		}
+	}
+
 	public DataLoader( SQLHandler handler, DataLoader.Loader loader, DataLoader.Logger loaderLogger, DataLoader.Validator validator
 						, DataReader reader, boolean commitByLine, File errorFile ) throws FileNotFoundException {
-		this( handler, loader, loaderLogger, validator, reader, commitByLine, new PrintStream(errorFile) );
-		this.errorFile = errorFile;
+		this( handler, loader, loaderLogger, validator, reader, commitByLine, new PrintStream(validateErrorFile(errorFile)) );
+		this.errorFile = validateErrorFile( errorFile );
 	}
 
 	public DataLoader( SQLHandler handler, DataLoader.Loader loader, DataLoader.Logger loaderLogger, DataLoader.Validator validator
 						, DataReader reader, boolean commitByLine, File errorFile, String encoding )
 						throws FileNotFoundException, UnsupportedEncodingException {
-		this( handler, loader, loaderLogger, validator, reader, commitByLine, new PrintStream(errorFile, encoding) );
-		this.errorFile = errorFile;
+		this( handler, loader, loaderLogger, validator, reader, commitByLine, new PrintStream(validateErrorFile(errorFile), encoding) );
+		this.errorFile = validateErrorFile( errorFile );
 	}
 
 	public DataLoader( SQLHandler handler, DataLoader.Loader loader, DataLoader.Logger loaderLogger, DataLoader.Validator validator
