@@ -64,6 +64,22 @@ public class OrderXMLUtility {
 		}
 	}
 
+	private static boolean isSafeTraceFileName( java.io.File file ) {
+		if( file == null ) return false;
+
+		String name = file.getName();
+		if( name == null ) return false;
+
+		String normalized = name.trim();
+		if( normalized.length() == 0 ) return false;
+
+		if( normalized.indexOf('/') >= 0 || normalized.indexOf('\\') >= 0 ) return false;
+		if( normalized.indexOf("..") >= 0 ) return false;
+		if( !normalized.endsWith(".xml") ) return false;
+
+		return normalized.matches("[A-Za-z0-9_-]+_[0-9]{14}\\.xml");
+	}
+
 	private static Element createElement( Document document, String name, Object text ) {
 		Element element = document.createElement( name );
 		if( text != null )
@@ -137,6 +153,8 @@ public class OrderXMLUtility {
 			throw new IllegalArgumentException( "invalid file" );
 		if( !isFileUnderOrderTracePath(file) )
 			throw new IllegalArgumentException( "invalid file path" );
+		if( !isSafeTraceFileName(file) )
+			throw new IllegalArgumentException( "invalid file name" );
 
 		java.io.PrintWriter out = null;
 		javax.xml.transform.Transformer transformer;
