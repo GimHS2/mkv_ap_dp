@@ -277,7 +277,7 @@ public class ItemImage extends com.irt.rbm.ManipulableManagerImpl {
 				Object imageExtention = rset.getObject(3);
 
 				Map<String, Object> recordMap = new java.util.HashMap<String, Object> ( primaryMap );
-				recordMap.put( "imagePath", imagePath );
+				recordMap.put( "imageFilePath", imagePath );
 				recordMap.put( "imageExtention", imageExtention );
 
 				String imageFileFullName = getStoredImageFileName( recordMap );
