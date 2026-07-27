@@ -43,6 +43,7 @@ import com.irt.dpr.util.Loggers;
 import com.irt.servlet.SystemConfig;
 import com.irt.sql.SQLHandler;
 import com.irt.sql.SQLManager;
+import com.irt.util.Utility;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -163,7 +164,7 @@ public class OrderCanonicalProcess {//@formatter:off
 	**/
 	public void execute_creation() throws OrderProcessException {
 		String orderKey = (String)getParameter( "orderKey" );
-		if( orderKey == null || orderKey.length() == 0 )
+		if( orderKey == null || orderKey.length() == 0 || Utility.isSafeKeyValue(orderKey) )
 			throw new OrderProcessException ( OrderProcessException.ERR_INVALID_PARAMETER );
 
 		// Record lock
