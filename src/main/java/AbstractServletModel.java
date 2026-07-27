@@ -205,10 +205,15 @@ public abstract class AbstractServletModel extends com.irt.servlet.ServletModel 
 					if( !Utility.isSafeFilePath(uploadPath) )
 						throw new ServletModelException( ServletModelException.INVALID_PARAMETER, "invaild file upload path" );
 
-					java.io.File newFile;
+					java.io.File uploadBaseDir = new java.io.File( uploadPath ).getCanonicalFile();
+					java.io.File newFile = new java.io.File( uploadBaseDir, fileName +"."+ com.irt.util.RBMWorkbook.getFileExtension(fileType) ).getCanonicalFile();
+					errorFile = new java.io.File( uploadBaseDir, fileName +"."+ com.irt.util.RBMWorkbook.getFileExtension(fileType) +".err" ).getCanonicalFile();
 
-					newFile = new java.io.File( uploadPath, fileName +"."+ com.irt.util.RBMWorkbook.getFileExtension(fileType) );
-					errorFile = new java.io.File( uploadPath, fileName +"."+ com.irt.util.RBMWorkbook.getFileExtension(fileType) +".err" );
+					String basePath = uploadBaseDir.getPath() + java.io.File.separator;
+					if( !newFile.getPath().startsWith(basePath) || !errorFile.getPath().startsWith(basePath) ) {
+						throw new ServletModelException( ServletModelException.INVALID_PARAMETER, "invaild file upload path" );
+					}
+
 					if( !uploadFile.renameTo(newFile) ) {
 						java.io.InputStream inputStream = new java.io.FileInputStream( uploadFile );
 						java.io.OutputStream outputStream = null;
